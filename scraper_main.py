@@ -1,6 +1,7 @@
 from time import localtime, sleep
 from bs4 import BeautifulSoup
 import requests
+from db.engine import init_data_base
 
 #TODO:Crear una carpeta de DTOs para esta y otras classes ?
 class CoinData():
@@ -47,11 +48,14 @@ def main():
         print(f'{i} -> {coin}')
 
 #TODO:put this into a constants folder
-ONE_MIN = 60
+ONE_MIN = 5
 
 if __name__ == "__main__":
-    #main()
-    while True:     
-        main()
-        sleep(ONE_MIN * 5)
+    db = init_data_base()
+    if db == False:
+        print("No se pudo conectar a la base de datos")
+    else:
+        while True:     
+            main()
+            sleep(ONE_MIN * 5)
         
