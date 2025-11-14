@@ -1,61 +1,65 @@
 from time import localtime, sleep
+from datetime import datetime
 from bs4 import BeautifulSoup
 import requests
-from db.engine import init_data_base
+from db.engine import init_data_base, crypto_data_table
+from sqlalchemy import insert
 
-#TODO:Crear una carpeta de DTOs para esta y otras classes ?
-class CoinData():
-    def __init__(self, name, price, market_cap, volume_24):
-        self.name = name
-        self.price = price
-        self.market_cap = market_cap
-        self.volume_24 = volume_24
-        now = localtime()
-        self.date = f'{now.tm_min}:{now.tm_hour}:{now.tm_mday}:{now.tm_mon}:{now.tm_year}'
-    
-    def __str__(self):
-        return f'CoinData({self.name}, {self.price}, {self.date})'
+#TODO: put this in a utils folder:
+def parse_to_float(text: str) -> float:
+    _str = ""
+    for ch in text:
+        if ch.isdigit() or ch == ".":
+            _str += ch
+    return float(_str)    
 
-def main():
+def extract_data():
     now = localtime()
     print(f"Scraping Coinmarketcap at min = {now.tm_min}, hour = {now.tm_hour}, day = {now.tm_mday}")
     #TODO: handle posible errors:
     response = requests.get("https://coinmarketcap.com/")
     soup = BeautifulSoup(response.text, 'html.parser')
-    rows = soup.find_all('tr')[0:11]  
+    rows = soup.find_all('tr')[0:11]#Just the firts ten entries ...
     
     if len(rows) == 0:
         print("No rows where found")
-        return
+        return []
     
     coins_data = []
     curr_cells_list = None
 
     for row in rows:
-        curr_cells_list = row.find_all("td")        
-        
+        curr_cells_list = row.find_all("td")
         if len(curr_cells_list) >= 8:
             coins_data.append(
-                CoinData(
-                    name = curr_cells_list[2].text,
-                    price = curr_cells_list[3].text,
-                    market_cap = curr_cells_list[7].text,
-                    volume_24 = curr_cells_list[8].text
-                )
+                {
+                    "coin_name": curr_cells_list[2].text,
+                    "price": parse_to_float(curr_cells_list[3].text),
+                    "market_cap": parse_to_float(curr_cells_list[7].text.split("$")[2]),#it is better to find a way to get the second span from BS
+                    "volume_24": parse_to_float(curr_cells_list[8].find("p").text),
+                    "scraped_at": datetime.now()
+                }
             )
 
-    for i, coin in enumerate(coins_data, start = 1):
-        print(f'{i} -> {coin}')
+    return coins_data
 
 #TODO:put this into a constants folder
-ONE_MIN = 5
+ONE_MIN = 60
 
 if __name__ == "__main__":
+
     db = init_data_base()
+    
     if db == False:
-        print("No se pudo conectar a la base de datos")
+        print("An error ocurred while trying to connect to the data base.")
     else:
         while True:     
-            main()
+            data = extract_data()
+            if len(data) != 0:
+                #Esto es una transaccion, ademas abre y cierra la conexion a lo largo del bloque with
+                with db.connect() as conn:
+                    conn.execute(insert(crypto_data_table), data)            
+                    conn.commit()
+                    print("Data collected succesfully")
+            
             sleep(ONE_MIN * 5)
-        
