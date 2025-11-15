@@ -48,15 +48,12 @@ def extract_data():
 
     return coins_data
 
-#TODO:put this into a constants folder
-
-
 if __name__ == "__main__":
 
     db = init_data_base()
     
     if db == False:
-        print("An error ocurred while trying to connect to the data base.")
+        raise Exception("An error ocurred while trying to connect to the data base.")
     else:
         while True:     
             data = extract_data()
@@ -65,6 +62,7 @@ if __name__ == "__main__":
                 with db.connect() as conn:
                     conn.execute(insert(crypto_data_table), data)            
                     conn.commit()
+                    conn.close()
                     print("Data collected succesfully, waiting 5 minutes ...")
                 sleep(TIME_TO_WAIT)
             else:
