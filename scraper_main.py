@@ -3,8 +3,8 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from requests import get
 from requests.exceptions import ConnectionError
-from db.engine import init_data_base, crypto_data_table
-from sqlalchemy import insert
+from db.engine import init_data_base
+from db.methods import insert_coin_data
 from utils.parse_to_float import parse_to_float
 from dotenv import load_dotenv 
 from os import getenv
@@ -56,14 +56,10 @@ if __name__ == "__main__":
         raise Exception("An error ocurred while trying to connect to the data base.")
     else:
         while True:     
-            data = extract_data()
-            if len(data) != 0:
-                #Esto es una transaccion, ademas abre y cierra la conexion a lo largo del bloque with
-                with db.connect() as conn:
-                    conn.execute(insert(crypto_data_table), data)            
-                    conn.commit()
-                    conn.close()
-                    print("Data collected succesfully, waiting 5 minutes ...")
+            coin_data_list = extract_data()
+            if len(coin_data_list) != 0:
+                insert_coin_data(data = coin_data_list)
+                print("Data collected succesfully, waiting 5 minutes ...")
                 sleep(TIME_TO_WAIT)
             else:
                 print("The data could not be fetched")

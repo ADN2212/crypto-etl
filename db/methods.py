@@ -1,6 +1,6 @@
 from datetime import datetime, MINYEAR
 from db.engine import crypto_data_table, init_data_base
-from sqlalchemy import select
+from sqlalchemy import select, insert
 
 db = init_data_base()
 
@@ -8,20 +8,16 @@ if db == False:
     raise Exception("An error ocurred while trying to connect to the data base.")
 
 
-#Este metodo retorna la fecha mas antigua 
+#Este metodo retorna la fecha mas antigua de la moneda en cuestion, de lo contrario retorna ??? 
 def get_min_date_for_coin(coin_name: str) -> datetime:
     with db.connect() as conn:
-        
         res = conn.execute(select(crypto_data_table.c.scraped_at).where(
             crypto_data_table.c.coin_name == coin_name,
         ).order_by(
             crypto_data_table.c.scraped_at
             ).limit(1))
         
-        res = list(res)
-        
-        #print(res)
-        
+        res = list(res) 
         conn.close()
         
         if len(res) == 0:
@@ -64,3 +60,11 @@ def get_price_until(coin_name: str, end_date: datetime) -> float | None:
 
         #Get the las element, asumiendo que estan ordenadas en forma cronologica:
         return res[len(res) - 1][0]
+
+def insert_coin_data(data):
+    with db.connect() as conn:
+        conn.execute(insert(crypto_data_table), data)            
+        conn.commit()
+        conn.close()
+
+

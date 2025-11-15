@@ -1,5 +1,5 @@
 from datetime import datetime
-from db.read_methods import get_price_from, get_price_until, get_min_date_for_coin
+from db.methods import get_price_from, get_price_until, get_min_date_for_coin
 from utils.is_today import is_today
 from utils.is_more_than_today import is_more_than_today
 
@@ -23,18 +23,16 @@ def compute_price_variation(coin_name: str | None, from_date_str = str | None, u
         #This is also a bad request:
         return {
             "message": "Dates can not be more than the current day"
-        } 
+        }
 
     t1 = None
     t2 = None
 
     if from_date and until_date == None:
-        print("Case one")
         t1 = from_date
         t2 = datetime.now()
     
     if from_date == None and until_date:
-        print("case 2")
         t1 = get_min_date_for_coin(coin_name = coin_name)
         if is_today(until_date):
             t2 =  datetime.now()
@@ -49,7 +47,6 @@ def compute_price_variation(coin_name: str | None, from_date_str = str | None, u
             )
 
     if from_date and until_date:
-        print("Case 3")
         #this is a bad request
         if from_date >= until_date:
             return {
