@@ -4,6 +4,10 @@ from db.read_methods import get_price_from, get_price_until, get_min_date_for_co
 #Tal vez en un archivo de constantes ???
 #MIN_DATE = datetime(year=MINYEAR, month=1, day=1)
 
+def is_today(date: datetime) -> bool:
+    now = datetime.today()
+    return  now.year == date.year and now.month == date.month and now.day == date.day
+ 
 def compute_price_variation(coin_name: str | None, from_date_str = str | None, until_date_str = str | None):
 
     if coin_name == None:
@@ -31,7 +35,10 @@ def compute_price_variation(coin_name: str | None, from_date_str = str | None, u
     if from_date == None and until_date:
         print("case 2")
         t1 = get_min_date_for_coin(coin_name = coin_name)
-        t2 = datetime(
+        if is_today(until_date):
+            t2 =  datetime.now()
+        else:
+            t2 = datetime(
                 year=until_date.year, 
                 month=until_date.month, 
                 day=until_date.day,
