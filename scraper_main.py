@@ -6,13 +6,21 @@ from requests.exceptions import ConnectionError
 from db.engine import init_data_base, crypto_data_table
 from sqlalchemy import insert
 from utils.parse_to_float import parse_to_float
+from dotenv import load_dotenv 
+from os import getenv
+
+load_dotenv()
+
+#It make sence ?
+SURCE_URL = getenv("SOURCE_URL")
+TIME_TO_WAIT = int(getenv("TIME_TO_WAIT"))
 
 def extract_data():
     now = localtime()
     print(f"Scraping Coinmarketcap at min = {now.tm_min}, hour = {now.tm_hour}, day = {now.tm_mday}")
     
     try:
-        response = get("https://coinmarketcap.com/")
+        response = get(SURCE_URL)
     except ConnectionError:
         return []
     
@@ -41,7 +49,7 @@ def extract_data():
     return coins_data
 
 #TODO:put this into a constants folder
-ONE_MIN = 60
+
 
 if __name__ == "__main__":
 
@@ -58,7 +66,7 @@ if __name__ == "__main__":
                     conn.execute(insert(crypto_data_table), data)            
                     conn.commit()
                     print("Data collected succesfully, waiting 5 minutes ...")
-                sleep(ONE_MIN * 5)
+                sleep(TIME_TO_WAIT)
             else:
                 print("The data could not be fetched")
                 break
