@@ -4,14 +4,7 @@ from bs4 import BeautifulSoup
 import requests
 from db.engine import init_data_base, crypto_data_table
 from sqlalchemy import insert
-
-#TODO: put this in a utils folder:
-def parse_to_float(text: str) -> float:
-    _str = ""
-    for ch in text:
-        if ch.isdigit() or ch == ".":
-            _str += ch
-    return float(_str)    
+from utils.parse_to_float import parse_to_float
 
 def extract_data():
     now = localtime()
@@ -60,6 +53,7 @@ if __name__ == "__main__":
                 with db.connect() as conn:
                     conn.execute(insert(crypto_data_table), data)            
                     conn.commit()
-                    print("Data collected succesfully")
+                    print("Data collected succesfully, waiting 5 minutes ...")
             
             sleep(ONE_MIN * 5)
+
