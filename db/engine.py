@@ -1,7 +1,8 @@
 from sqlalchemy import create_engine,  MetaData, Table, Column, Integer, String, DateTime, Double
+from dotenv import load_dotenv 
+from os import getenv
 
-#TODO:these must be envars
-DATA_BASE_URL='postgresql://postgres:123456@localhost:5432/crypto_prices'
+load_dotenv()
 
 # create a metadata object
 metadata = MetaData()#What the hell is this ???
@@ -18,6 +19,9 @@ crypto_data_table = Table(
             Column('volume_24', Double),
             Column('scraped_at', DateTime)   
     )
+
+
+DATA_BASE_URL = getenv("DATA_BASE_URL")
 
 def init_data_base():
     
