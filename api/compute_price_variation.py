@@ -2,28 +2,30 @@ from datetime import datetime
 from db.methods import get_price_from, get_price_until, get_min_date_for_coin
 from utils.is_today import is_today
 from utils.is_more_than_today import is_more_than_today
+from flask import Response
 
 def compute_price_variation(coin_name: str | None, from_date_str = str | None, until_date_str = str | None):
 
     if coin_name == None:
-        return {
-            "message": "A coin name must be provided"
-        }
+        return Response(
+            response = str({"message": "A coin name must be provided"}),
+            status = 400
+        )
     
     try:
         from_date = datetime.fromisoformat(from_date_str) if from_date_str != None else None
         until_date = datetime.fromisoformat(until_date_str) if until_date_str != None else None
     except ValueError:
-        #TODO: sed a Bad Request response code
-        return {
-            "message": "No valid format for date"
-        }
-
+        return Response(
+            response = str({"message": "No valid format for date"}),
+            status = 400
+        )
+    
     if is_more_than_today(from_date) or is_more_than_today(until_date):
-        #This is also a bad request:
-        return {
-            "message": "Dates can not be more than the current day"
-        }
+        return Response(
+            response= str({"message": "Dates can not be more than the current day"}),
+            status = 400
+        )
 
     t1 = None
     t2 = None
@@ -47,11 +49,11 @@ def compute_price_variation(coin_name: str | None, from_date_str = str | None, u
             )
 
     if from_date and until_date:
-        #this is a bad request
         if from_date >= until_date:
-            return {
-                "message": "from_date must be less than until_date"
-            }
+            return Response(
+                response = str({"message": "from_date must be less than until_date"}),
+                status = 400
+            )
         
         t1 = from_date
         if is_today(until_date):
@@ -72,16 +74,20 @@ def compute_price_variation(coin_name: str | None, from_date_str = str | None, u
     delta_time = t2 - t1
 
     if firts_price == None or last_price == None:
-        return {
-            "message": "no prices found"
-        }
+        return Response(
+            response = str({"message": "no prices found"}),
+            status = 404
+        )
 
     variation_per_100 = round(((last_price - firts_price) / last_price) * 100, 3)
 
-    return {
+    return Response(
+        response = str({
         "variation": f'{variation_per_100} %',
         "elapsed_time": {
             "days": delta_time.days,
-            "hours": round(delta_time.seconds / 3600, 2),
+            "hours": round(delta_time.seconds / 3600, 2)}
             }
-        }
+        ),
+        status = 200
+    )

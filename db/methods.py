@@ -45,6 +45,7 @@ def get_price_from(coin_name: str, start_date: datetime) -> float | None:#This i
 def get_price_until(coin_name: str, end_date: datetime) -> float | None:
     with db.connect() as conn:
         res = conn.execute(
+            #TODO:Buscar la menera de no tener que traer todas las tuplas antes de tomar el ultimo elemento.
             select(
                 crypto_data_table.c.price).where(
                     crypto_data_table.c.coin_name == coin_name,
