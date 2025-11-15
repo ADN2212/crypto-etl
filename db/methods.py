@@ -49,7 +49,7 @@ def get_price_until(coin_name: str, end_date: datetime) -> float | None:
                 crypto_data_table.c.price).where(
                     crypto_data_table.c.coin_name == coin_name,
                     crypto_data_table.c.scraped_at <= end_date
-                )
+                ).order_by(crypto_data_table.c.scraped_at)
             )
         
         res = list(res)
@@ -58,7 +58,6 @@ def get_price_until(coin_name: str, end_date: datetime) -> float | None:
         if len(res) == 0:
             return None
 
-        #Get the las element, asumiendo que estan ordenadas en forma cronologica:
         return res[len(res) - 1][0]
 
 def insert_coin_data(data):
