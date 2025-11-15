@@ -1,24 +1,7 @@
 from datetime import datetime
 from db.read_methods import get_price_from, get_price_until, get_min_date_for_coin
-
-#Tal vez en un archivo de constantes ???
-#MIN_DATE = datetime(year=MINYEAR, month=1, day=1)
-
-def is_today(date: datetime) -> bool:
-    today = datetime.today()
-    return  today.year == date.year and today.month == date.month and today.day == date.day
- 
-def is_more_than_today(date: datetime) -> bool:
-    today = datetime.today()
-    today_at_end = datetime(
-                year=today.year, 
-                month=today.month, 
-                day=today.day,
-                hour=23,
-                minute=59,
-                second=59
-            )
-    return date > today_at_end
+from utils.is_today import is_today
+from utils.is_more_than_today import is_more_than_today
 
 def compute_price_variation(coin_name: str | None, from_date_str = str | None, until_date_str = str | None):
 
