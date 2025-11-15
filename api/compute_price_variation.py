@@ -5,16 +5,28 @@ from db.read_methods import get_price_from, get_price_until, get_min_date_for_co
 #MIN_DATE = datetime(year=MINYEAR, month=1, day=1)
 
 def is_today(date: datetime) -> bool:
-    now = datetime.today()
-    return  now.year == date.year and now.month == date.month and now.day == date.day
+    today = datetime.today()
+    return  today.year == date.year and today.month == date.month and today.day == date.day
  
+def is_more_than_today(date: datetime) -> bool:
+    today = datetime.today()
+    today_at_end = datetime(
+                year=today.year, 
+                month=today.month, 
+                day=today.day,
+                hour=23,
+                minute=59,
+                second=59
+            )
+    return date > today_at_end
+
 def compute_price_variation(coin_name: str | None, from_date_str = str | None, until_date_str = str | None):
 
     if coin_name == None:
         return {
             "message": "A coin name must be provided"
         }
-
+    
     try:
         from_date = datetime.fromisoformat(from_date_str) if from_date_str != None else None
         until_date = datetime.fromisoformat(until_date_str) if until_date_str != None else None
@@ -23,6 +35,12 @@ def compute_price_variation(coin_name: str | None, from_date_str = str | None, u
         return {
             "message": "No valid format for date"
         }
+
+    if is_more_than_today(from_date) or is_more_than_today(until_date):
+        #This is also a bad request:
+        return {
+            "message": "Dates can not be more than the current day"
+        } 
 
     t1 = None
     t2 = None
@@ -49,8 +67,24 @@ def compute_price_variation(coin_name: str | None, from_date_str = str | None, u
 
     if from_date and until_date:
         print("Case 3")
+        #this is a bad request
+        if from_date >= until_date:
+            return {
+                "message": "from_date must be less than until_date"
+            }
+        
         t1 = from_date
-        t2 = until_date
+        if is_today(until_date):
+            t2 =  datetime.now()
+        else:
+            t2 = datetime(
+                year=until_date.year, 
+                month=until_date.month, 
+                day=until_date.day,
+                hour=23,
+                minute=59,
+                second=59
+            )
 
     firts_price = get_price_from(coin_name = coin_name, start_date = t1)
     last_price = get_price_until(coin_name = coin_name, end_date = t2)
