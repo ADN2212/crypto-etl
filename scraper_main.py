@@ -1,7 +1,8 @@
 from time import localtime, sleep
 from datetime import datetime
 from bs4 import BeautifulSoup
-import requests
+from requests import get
+from requests.exceptions import ConnectionError
 from db.engine import init_data_base, crypto_data_table
 from sqlalchemy import insert
 from utils.parse_to_float import parse_to_float
@@ -9,13 +10,16 @@ from utils.parse_to_float import parse_to_float
 def extract_data():
     now = localtime()
     print(f"Scraping Coinmarketcap at min = {now.tm_min}, hour = {now.tm_hour}, day = {now.tm_mday}")
-    #TODO: handle posible errors:
-    response = requests.get("https://coinmarketcap.com/")
+    
+    try:
+        response = get("https://coinmarketcap.com/")
+    except ConnectionError:
+        return []
+    
     soup = BeautifulSoup(response.text, 'html.parser')
     rows = soup.find_all('tr')[0:11]#Just the firts ten entries ...
     
     if len(rows) == 0:
-        print("No rows where found")
         return []
     
     coins_data = []
@@ -54,6 +58,7 @@ if __name__ == "__main__":
                     conn.execute(insert(crypto_data_table), data)            
                     conn.commit()
                     print("Data collected succesfully, waiting 5 minutes ...")
-            
-            sleep(ONE_MIN * 5)
-
+                sleep(ONE_MIN * 5)
+            else:
+                print("The data could not be fetched")
+                break
