@@ -38,7 +38,7 @@ def extract_data():
         if len(curr_cells_list) >= 8:
             coins_data.append(
                 {
-                    "coin_name": curr_cells_list[2].text,
+                    "coin_name": curr_cells_list[2].find(attrs={"class": "sc-65e7f566-0 iPbTJf coin-item-name"}).text,
                     "price": parse_to_float(curr_cells_list[3].text),
                     "market_cap": parse_to_float(curr_cells_list[7].text.split("$")[2]),#it is better to find a way to get the second span from BS
                     "volume_24": parse_to_float(curr_cells_list[8].find("p").text),
