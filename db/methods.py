@@ -40,8 +40,8 @@ def get_price_from(coin_name: str, start_date: datetime) -> float | None:#This i
         conn.close()
         return res[0][0] if len(res) == 1 else None
 
-#Este metodo retorna el ultimo precio de la moneda que cumpla con la fecha dada:
 
+#Este metodo retorna el ultimo precio de la moneda que cumpla con la fecha dada:
 def get_price_until(coin_name: str, end_date: datetime) -> float | None:
     with db.connect() as conn:
         res = conn.execute(
@@ -68,3 +68,21 @@ def insert_coin_data(data):
         conn.close()
 
 
+
+def compute_avg_in_interval(coin_name: str, start_date: datetime, end_date: datetime) -> float | None:
+    with db.connect() as conn:
+        res = conn.execute(
+            select(crypto_data_table.c.price).where(
+                crypto_data_table.c.coin_name == coin_name,
+                crypto_data_table.c.scraped_at >= start_date,
+                crypto_data_table.c.scraped_at <= end_date,
+            )
+        )
+        
+        res = list(res)
+        conn.close()
+        
+        if len(res) == 0:
+            return None
+
+        return round(sum([tup[0] for tup in res]) / len(res), 3)
