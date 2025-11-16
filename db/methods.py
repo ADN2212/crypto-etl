@@ -67,8 +67,6 @@ def insert_coin_data(data):
         conn.commit()
         conn.close()
 
-
-
 def compute_avg_in_interval(coin_name: str, start_date: datetime, end_date: datetime) -> float | None:
     with db.connect() as conn:
         res = conn.execute(
@@ -86,3 +84,23 @@ def compute_avg_in_interval(coin_name: str, start_date: datetime, end_date: date
             return None
 
         return round(sum([tup[0] for tup in res]) / len(res), 3)
+
+
+def compute_volue_market_cap_ratio(coin_name: str, start_date: datetime, end_date: datetime) -> float | None:
+    with db.connect() as conn:
+        res = conn.execute(
+            select(crypto_data_table.c.volume_24, crypto_data_table.c.market_cap).where(
+                crypto_data_table.c.coin_name == coin_name,
+                crypto_data_table.c.scraped_at >= start_date,
+                crypto_data_table.c.scraped_at <= end_date,
+            )
+        )
+
+        res = list(res)
+        conn.close()    
+        
+        if len(res) == 0:
+            return None
+
+        return sum([volume / market_cap for volume, market_cap in res]) / len(res)
+    

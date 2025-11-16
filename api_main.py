@@ -1,9 +1,11 @@
 from flask import Flask, request
 from api.compute_price_variation import compute_price_variation
 from api.compute_price_avg import compute_price_avg
+from api.compute_coin_liquidity import compute_coin_liquidity
 
 app = Flask(__name__)
 
+#Calcula la variacion porcentual del precio en un intervalo dado:
 @app.route("/compute-price-variation", methods=['GET'])
 def compute_price_var():
 
@@ -17,6 +19,7 @@ def compute_price_var():
         until_date_str = until_date
     )
 
+#Calcula el promedio del precio de una moneda en un intervalo dado:
 @app.route("/compute-price-averege", methods=['GET'])
 def compute_price_avgerage():
     
@@ -30,4 +33,16 @@ def compute_price_avgerage():
         until_date_str = until_date
     )
 
-app.run(port=8080, debug=True)
+#Calcula la liquidez media de una moneda en un dia dado:
+@app.route("/compute-volume-to-market-cap-ratio", methods=['GET'])
+def compute_liquidity():
+
+    coin_name = request.args.get("coin-name")
+    date = request.args.get('date')
+
+    return compute_coin_liquidity(
+        coin_name = coin_name,
+        date_str = date
+    )
+
+app.run(port = 8080, debug = True)
