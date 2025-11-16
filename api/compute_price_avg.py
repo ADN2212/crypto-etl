@@ -1,9 +1,9 @@
+from flask import Response
 from datetime import datetime
 from db.methods import compute_avg_in_interval
 from utils.is_today import is_today
 from utils.is_more_than_today import is_more_than_today
-from flask import Response
-
+from utils.last_day_moment import last_day_momonet
 
 def compute_price_avg(coin_name: str | None, from_date_str = str | None, until_date_str = str | None) -> Response:
 
@@ -45,14 +45,7 @@ def compute_price_avg(coin_name: str | None, from_date_str = str | None, until_d
     if is_today(until_date):
         t2 =  datetime.now()
     else:
-        t2 = datetime(
-                year=until_date.year, 
-                month=until_date.month, 
-                day=until_date.day,
-                hour=23,
-                minute=59,
-                second=59
-        )
+        t2 = last_day_momonet(until_date)
 
     avg = compute_avg_in_interval(
         coin_name = coin_name,

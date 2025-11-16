@@ -2,6 +2,8 @@ from datetime import datetime
 from db.methods import get_price_from, get_price_until, get_min_date_for_coin
 from utils.is_today import is_today
 from utils.is_more_than_today import is_more_than_today
+from utils.last_day_moment import last_day_momonet
+
 from flask import Response
 
 def compute_price_variation(coin_name: str | None, from_date_str = str | None, until_date_str = str | None):
@@ -39,14 +41,7 @@ def compute_price_variation(coin_name: str | None, from_date_str = str | None, u
         if is_today(until_date):
             t2 =  datetime.now()
         else:
-            t2 = datetime(
-                year=until_date.year, 
-                month=until_date.month, 
-                day=until_date.day,
-                hour=23,
-                minute=59,
-                second=59
-            )
+            t2 = last_day_momonet(until_date)
 
     if from_date and until_date:
         if from_date >= until_date:
@@ -59,14 +54,7 @@ def compute_price_variation(coin_name: str | None, from_date_str = str | None, u
         if is_today(until_date):
             t2 =  datetime.now()
         else:
-            t2 = datetime(
-                year=until_date.year, 
-                month=until_date.month, 
-                day=until_date.day,
-                hour=23,
-                minute=59,
-                second=59
-            )
+            t2 = last_day_momonet(until_date)
 
     firts_price = get_price_from(coin_name = coin_name, start_date = t1)
     last_price = get_price_until(coin_name = coin_name, end_date = t2)
