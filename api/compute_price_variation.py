@@ -1,10 +1,10 @@
 from datetime import datetime
+from flask import Response
 from db.methods import get_price_from, get_price_until, get_min_date_for_coin
 from utils.is_today import is_today
 from utils.is_more_than_today import is_more_than_today
 from utils.last_day_moment import last_day_momonet
 
-from flask import Response
 
 def compute_price_variation(coin_name: str | None, from_date_str = str | None, until_date_str = str | None):
 

@@ -103,4 +103,25 @@ def compute_volue_market_cap_ratio(coin_name: str, start_date: datetime, end_dat
             return None
 
         return sum([volume / market_cap for volume, market_cap in res]) / len(res)
+
+
+def get_coin_data(coin_name: str, start_date: datetime, end_date: datetime) -> list[dict] | None:
+    with db.connect() as conn:
+        res = conn.execute(
+            select(
+                crypto_data_table.c.price,
+                crypto_data_table.c.market_cap,
+                crypto_data_table.c.volume_24).where(
+                crypto_data_table.c.coin_name == coin_name,
+                crypto_data_table.c.scraped_at >= start_date,
+                crypto_data_table.c.scraped_at <= end_date,
+            )
+        )
     
+        res = list(res)
+        conn.close()    
+        
+        if len(res) == 0:
+            return None
+        
+        return [{"price": p, "market_cap": mc, "volume_24": v} for p, mc, v in res]                
