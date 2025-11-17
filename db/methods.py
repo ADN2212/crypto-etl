@@ -1,4 +1,4 @@
-from datetime import datetime, MINYEAR
+from datetime import datetime
 from db.engine import crypto_data_table, init_data_base
 from sqlalchemy import select, insert
 

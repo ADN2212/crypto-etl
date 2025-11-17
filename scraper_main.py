@@ -49,18 +49,12 @@ def extract_data():
     return coins_data
 
 if __name__ == "__main__":
-
-    db = init_data_base()
-    
-    if db == False:
-        raise Exception("An error ocurred while trying to connect to the data base.")
-    else:
-        while True:     
-            coin_data_list = extract_data()
-            if len(coin_data_list) != 0:
-                insert_coin_data(data = coin_data_list)
-                print("Data collected succesfully, waiting 5 minutes ...")
-                sleep(TIME_TO_WAIT)
-            else:
-                print("The data could not be fetched")
-                break
+    while True:     
+        coin_data_list = extract_data()
+        if len(coin_data_list) != 0:
+            insert_coin_data(data = coin_data_list)
+            print("Data collected succesfully, waiting 5 minutes ...")
+            sleep(TIME_TO_WAIT)
+        else:
+            print("The data could not be fetched")
+            break
