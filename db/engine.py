@@ -1,14 +1,12 @@
-from sqlalchemy import create_engine,  MetaData, Table, Column, Integer, String, DateTime, Double
+from sqlalchemy import create_engine,  MetaData, Table, Column, Integer, String, DateTime, Double, Engine
 from dotenv import load_dotenv 
 from os import getenv
 
+
 load_dotenv()
 
-# create a metadata object
-metadata = MetaData()#What the hell is this ???
+metadata = MetaData()
 
-#Create the table
-#Este objeto servira como referencia para hacer la querys con el ORM:
 crypto_data_table = Table(
             'crypto_data',
             metadata,
@@ -23,15 +21,20 @@ crypto_data_table = Table(
 
 DATA_BASE_URL = getenv("DATA_BASE_URL")
 
-def init_data_base():
+def init_data_base() -> Engine | bool:
     
     try:
         engine = create_engine(DATA_BASE_URL)
-    except:
+    except BaseException as err:
+        print(f'An error occurred while initializing the database => "{err}"')
+        return False
+
+    try:
+        metadata.create_all(engine)
+    except BaseException  as err:
+        print(f'An error occurred while initializing the database => "{err}"')
         return False
     
-    #Esto agrega el schema a la base de datos:
-    metadata.create_all(engine)
+    
     print("data base intialized succesfully")
-    return engine #Cada llamada a esta funcion creara una instancia de la Base de Datos, es esto correcto ? o mejor usar un singleton ?
-
+    return engine
