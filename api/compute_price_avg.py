@@ -63,7 +63,6 @@ def compute_price_avg(coin_name: str | None, from_date_str = str | None, until_d
     return Response(
         response=str({
             "average_price": avg,
-            "standard_deviation": "???"
         }),
         status = 200
     )
