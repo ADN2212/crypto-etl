@@ -3,7 +3,6 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from requests import get
 from requests.exceptions import ConnectionError
-from db.engine import init_data_base
 from db.methods import insert_coin_data
 from utils.parse_to_float import parse_to_float
 from dotenv import load_dotenv 

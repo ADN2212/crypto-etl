@@ -3,6 +3,10 @@ from api.compute_price_variation import compute_price_variation
 from api.compute_price_avg import compute_price_avg
 from api.compute_coin_liquidity import compute_coin_liquidity
 from api.get_coin_data_in import get_coin_data_in
+from dotenv import load_dotenv
+from os import getenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -61,4 +65,6 @@ def get_coin_data():
     )
 
 
-app.run(port = 8080, debug = True)
+PORT = int(getenv("PORT"))
+
+app.run(port = PORT, debug = True)
