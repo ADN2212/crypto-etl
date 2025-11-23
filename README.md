@@ -30,10 +30,10 @@ The main goal of the project is to generate useful insights from the information
 ```json
 "Example response body:"
 {
-    "variation": "5.67 %",
+    "variation": "-0.197 %", 
     "elapsed_time": {
-        "days": 7,
-        "hours": 15
+        "days": 2, 
+        "hours": 24.0
     }
 }
 ```
@@ -65,7 +65,28 @@ The main goal of the project is to generate useful insights from the information
 
 "Example response body:"
 {
-    "complete me"
+  "data": [
+        {
+          "price": 95456.51, 
+          "market_cap": 1901427690511.0, 
+          "volume_24": 112344817780.0
+        },
+        {
+          "price": 95572.74, 
+          "market_cap": 1906596319698.0, 
+          "volume_24": 107741187183.0
+        },
+        {
+          "price": 96331.06, 
+          "market_cap": 1921155625906.0, 
+          "volume_24": 79900390495.0
+        },
+        {
+          "price": 99241.34, 
+          "market_cap": 1980634554974.0, 
+          "volume_24": 104653100236.0
+        }
+      ]
 }
 ```
 
