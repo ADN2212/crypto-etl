@@ -70,29 +70,39 @@ The main goal of the project is to generate useful insights from the information
 ```
 
 ## Usage
+In order to use this project folow the next steps:
 
-Make sure that you have the latest Python version installed and set up a virtual environment before installing the project dependencies.
-
-### 1. Create and activate a virtual environment
-
+### 1. Set up the env vars
+```
+TIME_TO_WAIT=The amount of time in seconds that the scraper will wait to extact the data
+SOURCE_URL=https://coinmarketcap.com/
+DATA_BASE_URL=The direction of your data base
+PORT=The port that will serves the API (usually 8080)
+```
+### 2. Create a virtual environment and activate it (recommended name: crypto_etl)
 ```bash
-# Create a virtual environment (recommended name: venv)
-python -m venv venv
+python -m venv crypto_etl
 
 # Activate it on Linux / macOS
 source venv/bin/activate
 
 # Activate it on Windows
 venv\Scripts\activate
+```
 
-# Intall dependencies
-pip install -r requirements.txt
+### 3. Install dependencies
+```bash
+pip install -r requirements.txt #this is the one in this repository
+```
 
-#For runing the scraper
+### 4. Run de scraper and leave it some time extracting data
+```bash
 python scraper_main.py
+``` 
 
-#For runing the api
+### 5. Finally you can run de api to use the endpoints previously descrived
+```bash
 python api_main.py
 ```
 
-And then you are ready 🚀
+## And then you are ready 🚀
